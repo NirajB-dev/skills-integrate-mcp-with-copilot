@@ -5,23 +5,92 @@
   font-family: Arial, sans-serif;
 }
 
+:root {
+  --school-lime: #84cc16;
+  --school-lime-dark: #4d7c0f;
+  --school-lime-soft: #ecfccb;
+  --school-white: #ffffff;
+  --text-main: #2f3f1f;
+  --border-soft: #d9f99d;
+}
+
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
-  color: #333;
+  color: var(--text-main);
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f5f5f5;
+  background-color: var(--school-white);
+  position: relative;
+  z-index: 1;
+}
+
+.branch-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(132, 204, 22, 0.25) 0 5px, transparent 6px),
+    radial-gradient(circle at 34% 74%, rgba(132, 204, 22, 0.22) 0 4px, transparent 5px),
+    radial-gradient(circle at 66% 32%, rgba(132, 204, 22, 0.25) 0 5px, transparent 6px),
+    radial-gradient(circle at 88% 68%, rgba(132, 204, 22, 0.2) 0 4px, transparent 5px),
+    linear-gradient(180deg, #ffffff 0%, #f7fee7 100%);
+}
+
+.branch-background::before,
+.branch-background::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background-size: 600px 320px;
+  opacity: 0.45;
+}
+
+.branch-background::before {
+  background-image:
+    linear-gradient(105deg, transparent 0 43%, rgba(77, 124, 15, 0.24) 44% 45%, transparent 46% 100%),
+    linear-gradient(75deg, transparent 0 53%, rgba(132, 204, 22, 0.28) 54% 55%, transparent 56% 100%),
+    linear-gradient(130deg, transparent 0 63%, rgba(77, 124, 15, 0.2) 64% 65%, transparent 66% 100%);
+  animation: branchDrift 32s linear infinite;
+}
+
+.branch-background::after {
+  background-image:
+    linear-gradient(100deg, transparent 0 32%, rgba(132, 204, 22, 0.25) 33% 34%, transparent 35% 100%),
+    linear-gradient(65deg, transparent 0 68%, rgba(77, 124, 15, 0.2) 69% 70%, transparent 71% 100%);
+  background-size: 760px 380px;
+  animation: branchDriftReverse 44s linear infinite;
+}
+
+@keyframes branchDrift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-70px, -24px, 0);
+  }
+}
+
+@keyframes branchDriftReverse {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(50px, 18px, 0);
+  }
 }
 
 header {
   text-align: center;
   padding: 20px 0;
   margin-bottom: 30px;
-  background-color: #1a237e;
-  color: white;
+  background-color: var(--school-lime-dark);
+  color: var(--school-white);
   border-radius: 5px;
+  border: 2px solid var(--school-lime);
 }
 
 header h1 {
@@ -42,10 +111,11 @@ main {
 }
 
 section {
-  background-color: white;
+  background-color: var(--school-white);
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(77, 124, 15, 0.13);
+  border: 1px solid var(--border-soft);
   width: 100%;
   max-width: 500px;
 }
@@ -53,21 +123,21 @@ section {
 section h3 {
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-  color: #1a237e;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--school-lime-dark);
 }
 
 .activity-card {
   margin-bottom: 15px;
   padding: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-soft);
   border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: #f7fee7;
 }
 
 .activity-card h4 {
   margin-bottom: 10px;
-  color: #0066cc;
+  color: var(--school-lime-dark);
 }
 
 .activity-card p {
@@ -78,12 +148,12 @@ section h3 {
 .participants-container {
   margin-top: 15px;
   padding-top: 12px;
-  border-top: 1px dashed #ccc;
+  border-top: 1px dashed #bef264;
 }
 
 .participants-section h5 {
   margin-bottom: 8px;
-  color: #1a237e;
+  color: var(--school-lime-dark);
   font-size: 16px;
 }
 
@@ -113,7 +183,7 @@ section h3 {
 .delete-btn {
   background: none;
   border: none;
-  color: #c62828;
+  color: #a16207;
   cursor: pointer;
   font-size: 14px;
   padding: 2px 5px;
@@ -122,11 +192,11 @@ section h3 {
 }
 
 .delete-btn:hover {
-  background-color: #ffebee;
+  background-color: #fef9c3;
 }
 
 .participants-section p {
-  color: #777;
+  color: #4d7c0f;
   font-style: italic;
 }
 
@@ -144,14 +214,14 @@ section h3 {
 .form-group select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #bef264;
   border-radius: 4px;
   font-size: 16px;
 }
 
 button {
-  background-color: #1a237e;
-  color: white;
+  background-color: var(--school-lime-dark);
+  color: var(--school-white);
   border: none;
   padding: 10px 15px;
   font-size: 16px;
@@ -161,7 +231,7 @@ button {
 }
 
 button:hover {
-  background-color: #3949ab;
+  background-color: #3f6212;
 }
 
 .message {
@@ -183,18 +253,58 @@ button:hover {
 }
 
 .info {
-  background-color: #d1ecf1;
-  color: #0c5460;
-  border: 1px solid #bee5eb;
+  background-color: var(--school-lime-soft);
+  color: var(--school-lime-dark);
+  border: 1px solid #bef264;
 }
 
 .hidden {
   display: none;
 }
 
+#mascots-container {
+  max-width: 1030px;
+}
+
+.mascot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+}
+
+.mascot-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: #f7fee7;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mascot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(77, 124, 15, 0.16);
+}
+
+.mascot-card img {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.mascot-card p {
+  font-weight: bold;
+  text-align: center;
+}
+
 footer {
   text-align: center;
   margin-top: 30px;
   padding: 20px;
-  color: #666;
+  color: #4d7c0f;
 }
