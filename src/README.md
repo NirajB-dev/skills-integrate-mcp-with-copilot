@@ -47,4 +47,8 @@ The application uses a simple data model with meaningful identifiers:
    - Name
    - Grade level
 
-All data is stored in memory, which means data will be reset when the server restarts.
+## Activity Configuration
+
+Activities are defined in `activities.json` in this folder. Teachers can update that file directly to add, remove, or edit available activities without changing Python code.
+
+All data is stored in memory at runtime, which means participant changes reset when the server restarts.
