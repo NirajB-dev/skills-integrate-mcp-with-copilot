@@ -4,8 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("search-input");
   const categoryFilter = document.getElementById("category-filter");
   const sortBy = document.getElementById("sort-by");
+  const userMenuBtn = document.getElementById("user-menu-btn");
+  const adminPanel = document.getElementById("admin-panel");
+  const adminStatus = document.getElementById("admin-status");
+  const loginBtn = document.getElementById("login-btn");
+  const logoutBtn = document.getElementById("logout-btn");
+  const loginModal = document.getElementById("login-modal");
+  const loginForm = document.getElementById("login-form");
+  const cancelLoginBtn = document.getElementById("cancel-login-btn");
+  const teacherUsername = document.getElementById("teacher-username");
+  const teacherPassword = document.getElementById("teacher-password");
 
   let allActivities = [];
+  let teacherToken = localStorage.getItem("teacherToken") || "";
+  let teacherUsernameValue = "";
 
   function escapeHtml(value) {
     return String(value)
@@ -38,6 +50,54 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       messageDiv.classList.add("hidden");
     }, 5000);
+  }
+
+  function getAuthHeaders() {
+    if (!teacherToken) {
+      return {};
+    }
+
+    return { "X-Teacher-Token": teacherToken };
+  }
+
+  function updateAdminUI() {
+    if (teacherToken) {
+      adminStatus.textContent = `Teacher: ${teacherUsernameValue || "Logged in"}`;
+      loginBtn.classList.add("hidden");
+      logoutBtn.classList.remove("hidden");
+    } else {
+      adminStatus.textContent = "Student mode";
+      loginBtn.classList.remove("hidden");
+      logoutBtn.classList.add("hidden");
+    }
+  }
+
+  async function checkSession() {
+    if (!teacherToken) {
+      updateAdminUI();
+      return;
+    }
+
+    try {
+      const response = await fetch("/auth/session", {
+        headers: getAuthHeaders(),
+      });
+      const session = await response.json();
+
+      if (session.authenticated) {
+        teacherUsernameValue = session.username || "";
+      } else {
+        teacherToken = "";
+        teacherUsernameValue = "";
+        localStorage.removeItem("teacherToken");
+      }
+    } catch (error) {
+      teacherToken = "";
+      teacherUsernameValue = "";
+      localStorage.removeItem("teacherToken");
+    }
+
+    updateAdminUI();
   }
 
   function applyFiltersAndRender() {
@@ -84,9 +144,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     (email) =>
                       `<li><span class="participant-email">${escapeHtml(
                         email
-                      )}</span><button class="delete-btn" data-activity="${escapeHtml(
-                        name
-                      )}" data-email="${escapeHtml(email)}">❌</button></li>`
+                      )}</span>${
+                        teacherToken
+                          ? `<button class="delete-btn" data-activity="${escapeHtml(
+                              name
+                            )}" data-email="${escapeHtml(email)}">❌</button>`
+                          : ""
+                      }</li>`
                   )
                   .join("")}
               </ul>
@@ -99,11 +163,15 @@ document.addEventListener("DOMContentLoaded", () => {
         <p>${escapeHtml(details.description)}</p>
         <p><strong>Schedule:</strong> ${escapeHtml(details.schedule)}</p>
         <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-        <div class="activity-actions">
-          <button class="register-btn" data-activity="${escapeHtml(
-            name
-          )}" type="button">Register student</button>
-        </div>
+        ${
+          teacherToken
+            ? `<div class="activity-actions">
+                 <button class="register-btn" data-activity="${escapeHtml(
+                   name
+                 )}" type="button">Register student</button>
+               </div>`
+            : ""
+        }
         <div class="participants-container">
           ${participantsHTML}
         </div>
@@ -112,13 +180,15 @@ document.addEventListener("DOMContentLoaded", () => {
       activitiesList.appendChild(activityCard);
     });
 
-    document.querySelectorAll(".delete-btn").forEach((button) => {
-      button.addEventListener("click", handleUnregister);
-    });
+    if (teacherToken) {
+      document.querySelectorAll(".delete-btn").forEach((button) => {
+        button.addEventListener("click", handleUnregister);
+      });
 
-    document.querySelectorAll(".register-btn").forEach((button) => {
-      button.addEventListener("click", handleRegister);
-    });
+      document.querySelectorAll(".register-btn").forEach((button) => {
+        button.addEventListener("click", handleRegister);
+      });
+    }
   }
 
   function populateCategoryFilter() {
@@ -173,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
         )}/signup?email=${encodeURIComponent(email)}`,
         {
           method: "POST",
+          headers: getAuthHeaders(),
         }
       );
 
@@ -203,6 +274,7 @@ document.addEventListener("DOMContentLoaded", () => {
         )}/unregister?email=${encodeURIComponent(email)}`,
         {
           method: "DELETE",
+          headers: getAuthHeaders(),
         }
       );
 
@@ -226,6 +298,81 @@ document.addEventListener("DOMContentLoaded", () => {
   categoryFilter.addEventListener("change", applyFiltersAndRender);
   sortBy.addEventListener("change", applyFiltersAndRender);
 
+  userMenuBtn.addEventListener("click", () => {
+    adminPanel.classList.toggle("hidden");
+  });
+
+  loginBtn.addEventListener("click", () => {
+    adminPanel.classList.add("hidden");
+    loginModal.classList.remove("hidden");
+    teacherUsername.focus();
+  });
+
+  cancelLoginBtn.addEventListener("click", () => {
+    loginModal.classList.add("hidden");
+    loginForm.reset();
+  });
+
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch("/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: teacherUsername.value.trim(),
+          password: teacherPassword.value,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        showMessage(result.detail || "Login failed", "error");
+        return;
+      }
+
+      teacherToken = result.token;
+      teacherUsernameValue = result.username;
+      localStorage.setItem("teacherToken", teacherToken);
+      updateAdminUI();
+      loginModal.classList.add("hidden");
+      loginForm.reset();
+      showMessage("Teacher mode enabled", "success");
+      applyFiltersAndRender();
+    } catch (error) {
+      showMessage("Login failed. Please try again.", "error");
+    }
+  });
+
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await fetch("/auth/logout", {
+        method: "POST",
+        headers: getAuthHeaders(),
+      });
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    }
+
+    teacherToken = "";
+    teacherUsernameValue = "";
+    localStorage.removeItem("teacherToken");
+    updateAdminUI();
+    adminPanel.classList.add("hidden");
+    showMessage("Returned to student mode", "info");
+    applyFiltersAndRender();
+  });
+
+  loginModal.addEventListener("click", (event) => {
+    if (event.target === loginModal) {
+      loginModal.classList.add("hidden");
+    }
+  });
+
   // Initialize app
-  fetchActivities();
+  checkSession().then(fetchActivities);
 });

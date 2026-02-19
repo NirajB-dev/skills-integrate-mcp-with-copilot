@@ -10,9 +10,37 @@
     <div class="branch-background" aria-hidden="true"></div>
 
     <header>
+      <div class="admin-corner">
+        <button id="user-menu-btn" class="icon-btn" type="button" aria-label="User menu">👤</button>
+        <div id="admin-panel" class="admin-panel hidden">
+          <p id="admin-status">Student mode</p>
+          <button id="login-btn" type="button">Log In</button>
+          <button id="logout-btn" class="hidden" type="button">Log Out</button>
+        </div>
+      </div>
       <h1>Mergington High School</h1>
       <h2>Extracurricular Activities</h2>
     </header>
+
+    <div id="login-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <div class="modal-content">
+        <h3 id="login-title">Teacher Login</h3>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="teacher-username">Username:</label>
+            <input id="teacher-username" type="text" required />
+          </div>
+          <div class="form-group">
+            <label for="teacher-password">Password:</label>
+            <input id="teacher-password" type="password" required />
+          </div>
+          <div class="modal-actions">
+            <button type="submit">Log In</button>
+            <button id="cancel-login-btn" type="button">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <main>
       <section id="mascots-container">

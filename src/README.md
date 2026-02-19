@@ -51,4 +51,16 @@ The application uses a simple data model with meaningful identifiers:
 
 Activities are defined in `activities.json` in this folder. Teachers can update that file directly to add, remove, or edit available activities without changing Python code.
 
+Each activity supports these optional fields for the activity toolbar:
+- `category` (for filtering, e.g. `Academic`, `Sports`, `Arts`)
+- `start_time` in 24-hour format `HH:MM` (for sorting by earliest start time)
+
+## Admin Mode
+
+Teacher credentials are stored in `teachers.json` as username/password pairs.
+
+- Teachers can log in from the user icon in the top-right corner.
+- Only logged-in teachers can register or unregister students.
+- Students can still view activities and participant lists without logging in.
+
 All data is stored in memory at runtime, which means participant changes reset when the server restarts.
