@@ -15,33 +15,6 @@
     </header>
 
     <main>
-      <section id="activities-container">
-        <h3>Available Activities</h3>
-        <div id="activities-list">
-          <!-- Activities will be loaded here -->
-          <p>Loading activities...</p>
-        </div>
-      </section>
-
-      <section id="signup-container">
-        <h3>Sign Up for an Activity</h3>
-        <form id="signup-form">
-          <div class="form-group">
-            <label for="email">Student Email:</label>
-            <input type="email" id="email" required placeholder="your-email@mergington.edu" />
-          </div>
-          <div class="form-group">
-            <label for="activity">Select Activity:</label>
-            <select id="activity" required>
-              <option value="">-- Select an activity --</option>
-              <!-- Activity options will be loaded here -->
-            </select>
-          </div>
-          <button type="submit">Sign Up</button>
-        </form>
-        <div id="message" class="hidden"></div>
-      </section>
-
       <section id="mascots-container">
         <h3>School Mascot Squad</h3>
         <div class="mascot-grid">
@@ -61,6 +34,34 @@
             <img src="https://octodex.github.com/images/spidertocat.png" alt="Spidertocat" loading="lazy" />
             <p>Spidertocat</p>
           </a>
+        </div>
+      </section>
+
+      <section id="activities-container">
+        <h3>Available Activities</h3>
+        <div class="activity-toolbar" aria-label="Activity controls">
+          <div class="toolbar-group toolbar-search">
+            <label for="search-input">Search</label>
+            <input id="search-input" type="text" placeholder="Search by name or description" />
+          </div>
+          <div class="toolbar-group">
+            <label for="category-filter">Category</label>
+            <select id="category-filter">
+              <option value="all">All categories</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <label for="sort-by">Sort by</label>
+            <select id="sort-by">
+              <option value="name">Name (A-Z)</option>
+              <option value="time">Start time (earliest)</option>
+            </select>
+          </div>
+        </div>
+        <div id="message" class="hidden"></div>
+        <div id="activities-list">
+          <!-- Activities will be loaded here -->
+          <p>Loading activities...</p>
         </div>
       </section>
     </main>
